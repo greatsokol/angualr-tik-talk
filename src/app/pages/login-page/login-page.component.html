@@ -1,0 +1,26 @@
+<form class="login-form mb16" [formGroup]="form" (ngSubmit)="onSubmit()">
+  <h1 class="h1 mb60">Вход</h1>
+  <label class="tt-control-label">
+    Логин
+    <input formControlName="username"
+           class="tt-input"
+           type="text"
+           placeholder="Введите логин">
+  </label>
+  <label class="tt-control-label mb32">
+    Пароль
+    <div class="password-input">
+      <input formControlName="password"
+             class="tt-input"
+             [type]="isPasswordVisible() ? 'text' : 'password'"
+             placeholder="Введите пароль"/>
+      <button class="password-eye-btn"
+              (click)="isPasswordVisible.set(!isPasswordVisible())"
+              type="button">
+        <img alt="eye" src="/assets/svg/eye.svg"/>
+      </button>
+    </div>
+  </label>
+  <button class="btn btn-shadow" type="submit">Войти</button>
+</form>
+<img alt="logo" class="big-logo" src="/assets/svg/logo-big.svg">
