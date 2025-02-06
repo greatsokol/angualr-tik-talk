@@ -1,9 +1,10 @@
 @if (profile) {
   <div class="profile-card">
     <div class="avatar-name">
-      <img alt="avatar"
-           [src]="profile.avatarUrl | imgUrl"
-           class="profile-card__avatar">
+      <app-avatar-circle
+        class="size64"
+        [avatarUrl]="profile.avatarUrl"
+        [username]="profile.username" />
       <div class="profile-card__name">
         <strong class="h6">{{ profile.firstName }} {{ profile.lastName }}</strong>
         <span class="subtitle">{{ profile.username }}</span>

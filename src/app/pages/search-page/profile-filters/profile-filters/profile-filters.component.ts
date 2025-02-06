@@ -32,8 +32,8 @@ export class ProfileFiltersComponent implements OnInit, OnDestroy {
         switchMap(form => {
           return this.profileService.filterProfiles(form);
         })
-      ).subscribe(profiles => {
-        console.log(profiles);
+      ).subscribe(_ => {
+        //console.log(profiles);
       });
   }
 

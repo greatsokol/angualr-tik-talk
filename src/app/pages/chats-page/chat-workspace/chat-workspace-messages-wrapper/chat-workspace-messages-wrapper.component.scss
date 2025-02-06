@@ -1,0 +1,13 @@
+:host {
+  display: grid;
+  padding: 16px 20px;
+  grid-template-rows: 1fr min-content;
+}
+
+.messages-wrapper {
+  display: grid;
+  grid-template-rows: repeat(auto-fill, minmax(50px, min-content));
+  grid-gap: 12px;
+  scrollbar-width: thin;
+  overflow-y: auto;
+}

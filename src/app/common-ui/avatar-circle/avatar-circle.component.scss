@@ -1,0 +1,27 @@
+img {
+  border-radius: 50%;
+  width: 112px;
+  height: 112px;
+}
+
+:host {
+
+}
+
+:host.size32 img {
+  width: 32px;
+  height: 32px;
+}
+
+:host.size48 img {
+  width: 48px;
+  height: 48px;
+}
+
+:host.size64 img {
+  width: 64px;
+  height: 64px;
+}
+
+
+

@@ -34,11 +34,12 @@
 
 <footer class="sidebar__footer">
   @if (me(); as me) {
-    @if (me.avatarUrl) {
-      <img [src]="profileService.avatarUrl() | imgUrl" [alt]="me.lastName" class="avatar">
-    } @else {
-      <img src="/assets/images/avatar_placeholder.png" [alt]="me.lastName" class="avatar">
-    }
+    <app-avatar-circle
+      class="size32"
+      [avatarUrl]="profileService.avatarUrl()"
+      [username]="me.username"
+    ></app-avatar-circle>
+
     <div class="medium-text username-text">{{me.username}}</div>
     <a [routerLink]="['settings']" >
       <svg icon="settings" class="settings-button"></svg>
