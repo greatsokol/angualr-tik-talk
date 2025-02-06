@@ -50,7 +50,7 @@ export class ChatWorkspaceMessagesWrapperComponent implements OnInit, AfterViewI
 
   resizeFeed() {
     const {top} = this.messagesScroller.nativeElement.getBoundingClientRect();
-    const scrollerHeight = window.innerHeight - top - (1 + 16 + 44) - 16;
+    const scrollerHeight = window.innerHeight - top - (1 + 16 + 44) - 16 - 50;
     this.r2.setStyle(this.messagesScroller.nativeElement, 'height', `${scrollerHeight}px`);
   }
 
