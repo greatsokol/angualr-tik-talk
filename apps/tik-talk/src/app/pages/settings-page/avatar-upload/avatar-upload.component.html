@@ -1,0 +1,29 @@
+<img
+  [src]="
+    preview() ||
+    (profileService.avatarUrl() | imgUrl) ||
+    '/assets/images/avatar_placeholder.png'
+  "
+  alt="avatar"
+  class="avatar"
+/>
+<div
+  appDragNDrop
+  class="dropzone"
+  tabindex="0"
+  (keyup.enter)="fileDrop.click()"
+  (click)="fileDrop.click()"
+  (fileDropped)="fileDropHandler($event)"
+>
+  <div class="dropzone-content">
+    <svg class="dropzone-content-icon" icon="upload"></svg>
+    <span class="medium-text">Перетащите изображение или Загрузите</span>
+  </div>
+  <input
+    type="file"
+    class="avatar-input"
+    tabindex="-1"
+    (change)="fileBrowserHandler($event)"
+    #fileDrop
+  />
+</div>
