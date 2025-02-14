@@ -3,8 +3,8 @@ import {PostInputComponent} from '../../ui';
 import {PostComponent} from '../post/post.component';
 import {PostService} from '../../data';
 import {firstValueFrom} from 'rxjs';
-import {DebounceMethod} from "@tt/shared";
-import {Profile, ProfileService} from "@tt/profile";
+import {DebounceMethod, GlobalStoreService} from "@tt/shared";
+import {Profile} from "@tt/interfaces/profile";
 
 
 @Component({
@@ -18,7 +18,7 @@ export class PostFeedComponent implements AfterViewInit {
   postService = inject(PostService);
   r2 = inject(Renderer2);
   hostElement = inject(ElementRef);
-  me = inject(ProfileService).me;
+  me = inject(GlobalStoreService).me;
   profile = input<Profile>();
   feed = this.postService.posts;
 
