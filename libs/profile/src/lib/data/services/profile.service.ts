@@ -21,7 +21,7 @@ export class ProfileService {
       map(me => {
         return {
           ...me,
-          updateTime: Date.now()
+          avatarUrl: me.avatarUrl + '?' + Date.now()
         };
       })
     )

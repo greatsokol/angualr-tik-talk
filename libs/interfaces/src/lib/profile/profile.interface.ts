@@ -9,5 +9,4 @@ export interface Profile {
   stack: string[];
   city: string;
   description: string;
-  updateTime?: number;
 }
