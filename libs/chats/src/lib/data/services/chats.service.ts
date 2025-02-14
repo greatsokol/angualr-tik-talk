@@ -2,15 +2,19 @@ import {inject, Injectable, signal} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Chat, LastMessage, Message} from '../interfaces/chats.interface';
 import {map} from 'rxjs';
-import {ProfileService} from "@tt/profile";
+import {ProfileService, selectMe} from "@tt/profile";
 import {baseUrl} from "@tt/globals";
+import {Store} from "@ngrx/store";
 
 @Injectable({
   providedIn: 'root',
 })
 export class ChatsService {
   #http = inject(HttpClient);
-  #me = inject(ProfileService).me;
+  #store = inject(Store);
+  #me = this.#store.selectSignal(selectMe);
+  //#me = inject(ProfileService).me;
+
   activeChatMessages = signal<Message[]>([]);
 
   #chatsUrl = `${baseUrl}chat/`;

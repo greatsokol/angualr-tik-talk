@@ -1,8 +1,8 @@
-import {inject, Injectable, signal} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 
-import {map, tap} from 'rxjs';
-import {GlobalStoreService, Pagable} from "@tt/shared";
+import {map} from 'rxjs';
+import {Pagable} from "@tt/shared";
 import {baseUrl} from "@tt/globals";
 import {Profile} from "@tt/interfaces/profile";
 
@@ -11,10 +11,6 @@ import {Profile} from "@tt/interfaces/profile";
 })
 export class ProfileService {
   #http = inject(HttpClient);
-  me = signal<Profile | null>(null);
-  filteredProfiles = signal<Profile[]>([]);
-  avatarUrl = signal<string | null>(null);
-  #globalStoreService: GlobalStoreService = inject(GlobalStoreService);
 
   getAccount(id: string) {
     return this.#http.get<Profile>(`${baseUrl}account/${id}`);
@@ -22,12 +18,13 @@ export class ProfileService {
 
   getMe() {
     return this.#http.get<Profile>(`${baseUrl}account/me`).pipe(
-      tap((data) => {
-        this.me.set(data);
-        this.avatarUrl.set(data.avatarUrl);
-        this.#globalStoreService.me.set(data);
+      map(me => {
+        return {
+          ...me,
+          updateTime: Date.now()
+        };
       })
-    );
+    )
   }
 
   getSubscribersShortList(amount: number = 3) {
@@ -45,7 +42,7 @@ export class ProfileService {
     fd.append('image', file);
     return this.#http
       .post<Profile>(`${baseUrl}account/upload_image`, fd)
-      .pipe(tap((data) => this.avatarUrl.set(data.avatarUrl)));
+    //.pipe(tap((data) => this.avatarUrl.set(data.avatarUrl)));
   }
 
   filterProfiles(params: Record<string, any>) {
@@ -53,6 +50,5 @@ export class ProfileService {
       .get<Pagable<Profile>>(`${baseUrl}account/accounts`, {
         params,
       })
-      .pipe(tap((data) => this.filteredProfiles.set(data.items)));
   }
 }

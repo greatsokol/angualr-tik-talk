@@ -1,7 +1,8 @@
 import {Component, inject, signal} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {DragNDropDirective, ImgUrlPipe, SvgIconComponent} from "@tt/common-ui";
-import {ProfileService} from "@tt/profile";
+import {ProfileService, selectMe} from "@tt/profile";
+import {Store} from "@ngrx/store";
 
 
 @Component({
@@ -12,8 +13,11 @@ import {ProfileService} from "@tt/profile";
   styleUrl: './avatar-upload.component.scss',
 })
 export class AvatarUploadComponent {
-  preview = signal<string | null | undefined | ArrayBuffer>(null);
   profileService: ProfileService = inject(ProfileService);
+  store = inject(Store);
+
+  preview = signal<string | null | undefined | ArrayBuffer>(null);
+  me = this.store.selectSignal(selectMe);
   avatar: File | null = null;
 
   fileBrowserHandler(event: Event) {
@@ -33,5 +37,7 @@ export class AvatarUploadComponent {
     };
     reader.readAsDataURL(file);
     this.avatar = file;
+
   }
+
 }

@@ -1,7 +1,7 @@
 <app-avatar-circle
   class="size32"
-  [avatarUrl]="profile()?.avatarUrl"
-  [username]="profile()?.username"
+  [avatarUrl]="me()?.avatarUrl+'?'+me()?.updateTime"
+  [username]="me()?.username"
 ></app-avatar-circle>
 
 <textarea

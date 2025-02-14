@@ -1,7 +1,7 @@
 <img
   [src]="
     preview() ||
-    (profileService.avatarUrl() | imgUrl) ||
+    (me()?.avatarUrl | imgUrl) ||
     '/assets/images/avatar_placeholder.png'
   "
   alt="avatar"

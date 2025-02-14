@@ -3,8 +3,10 @@ import {PostInputComponent} from '../../ui';
 import {PostComponent} from '../post/post.component';
 import {PostService} from '../../data';
 import {firstValueFrom} from 'rxjs';
-import {DebounceMethod, GlobalStoreService} from "@tt/shared";
+import {DebounceMethod} from "@tt/shared";
 import {Profile} from "@tt/interfaces/profile";
+import {Store} from "@ngrx/store";
+import {selectMe} from "@tt/profile";
 
 
 @Component({
@@ -18,7 +20,7 @@ export class PostFeedComponent implements AfterViewInit {
   postService = inject(PostService);
   r2 = inject(Renderer2);
   hostElement = inject(ElementRef);
-  me = inject(GlobalStoreService).me;
+  me = inject(Store).selectSignal(selectMe);
   profile = input<Profile>();
   feed = this.postService.posts;
 

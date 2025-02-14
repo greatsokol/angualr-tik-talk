@@ -6,7 +6,8 @@ import {toObservable} from '@angular/core/rxjs-interop';
 import {AsyncPipe} from '@angular/common';
 import {PostFeedComponent} from '@tt/posts';
 import {ImgUrlPipe, SvgIconComponent} from "@tt/common-ui";
-import {ProfileService} from "../../data";
+import {ProfileService, selectMe} from "../../data";
+import {Store} from "@ngrx/store";
 
 @Component({
   selector: 'app-profile-page',
@@ -26,8 +27,10 @@ export class ProfilePageComponent {
   profileService: ProfileService = inject(ProfileService);
   route: ActivatedRoute = inject(ActivatedRoute);
   router: Router = inject(Router);
+  store = inject(Store);
+
   subscribers$ = this.profileService.getSubscribersShortList(5);
-  me = this.profileService.me;
+  me = this.store.selectSignal(selectMe);
   me$ = toObservable(this.me);
   isMyPage = signal<boolean>(false);
 

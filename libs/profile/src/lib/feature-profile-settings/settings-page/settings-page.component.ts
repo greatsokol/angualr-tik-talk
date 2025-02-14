@@ -1,8 +1,9 @@
 import {Component, effect, inject, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators,} from '@angular/forms';
 import {firstValueFrom} from 'rxjs';
-import {ProfileService} from "@tt/profile";
+import {profileActions, ProfileService, selectMe} from "@tt/profile";
 import {AvatarUploadComponent, ProfileHeaderComponent} from "../../ui";
+import {Store} from "@ngrx/store";
 
 @Component({
   selector: 'app-settings-page',
@@ -14,6 +15,9 @@ import {AvatarUploadComponent, ProfileHeaderComponent} from "../../ui";
 export class SettingsPageComponent {
   fb: FormBuilder = inject(FormBuilder);
   profileService: ProfileService = inject(ProfileService);
+  store = inject(Store);
+
+  me = this.store.selectSignal(selectMe);
 
   @ViewChild(AvatarUploadComponent) avatarUploader!: AvatarUploadComponent;
 
@@ -28,8 +32,8 @@ export class SettingsPageComponent {
   constructor() {
     effect(() => {
       this.form.patchValue({
-        ...this.profileService.me(),
-        stack: this.mergeStack(this.profileService.me()?.stack),
+        ...this.me(),
+        stack: this.mergeStack(this.me()?.stack),
       });
     });
   }
@@ -42,7 +46,7 @@ export class SettingsPageComponent {
     if (this.avatarUploader.avatar) {
       firstValueFrom(
         this.profileService.uploadAvatar(this.avatarUploader.avatar)
-      );
+      )
     }
 
     firstValueFrom(
@@ -50,7 +54,7 @@ export class SettingsPageComponent {
         ...this.form.value,
         stack: this.splitStack(this.form.value.stack),
       })
-    );
+    ).then(_ => this.store.dispatch(profileActions.getMe()))
   }
 
   splitStack(stack: null | undefined | string | string[]): string[] {
