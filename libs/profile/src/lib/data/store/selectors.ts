@@ -10,3 +10,14 @@ export const selectMe = createSelector(
   profileFeature.selectMe,
   (me) => me
 )
+
+export const selectSearchFilter = createSelector(
+  profileFeature.selectSearchFilter,
+  (searcFilter) => {
+    return {
+      firstName: searcFilter["firstName"],
+      lastName: searcFilter["lastName"],
+      stack: searcFilter["stack"]
+    }
+  }
+)

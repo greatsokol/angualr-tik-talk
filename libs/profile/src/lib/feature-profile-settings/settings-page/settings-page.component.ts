@@ -54,7 +54,7 @@ export class SettingsPageComponent {
         ...this.form.value,
         stack: this.splitStack(this.form.value.stack),
       })
-    ).then(_ => this.store.dispatch(profileActions.getMe()))
+    ).then(_ => this.store.dispatch(profileActions.getMeEvent()))
   }
 
   splitStack(stack: null | undefined | string | string[]): string[] {

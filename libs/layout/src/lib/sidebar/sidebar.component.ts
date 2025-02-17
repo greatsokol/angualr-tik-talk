@@ -47,6 +47,6 @@ export class SidebarComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    this.store.dispatch(profileActions.getMe());
+    this.store.dispatch(profileActions.getMeEvent());
   }
 }

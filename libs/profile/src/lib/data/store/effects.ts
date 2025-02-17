@@ -14,18 +14,18 @@ export class ProfileEffects {
 
   filterProfiles = createEffect(
     () => this.actions$.pipe(
-      ofType(profileActions.filterEvents),
+      ofType(profileActions.filterEvent),
       switchMap(({filters}) =>
         this.profileService.filterProfiles(filters)),
-      map(response => profileActions.profilesLoaded({profiles: response.items}))
+      map(response => profileActions.profilesLoadedEvent({profiles: response.items}))
     )
   );
 
   getMe = createEffect(
     () => this.actions$.pipe(
-      ofType(profileActions.getMe),
+      ofType(profileActions.getMeEvent),
       switchMap(() => this.profileService.getMe()),
-      map(response => profileActions.meLoaded({me: response}))
+      map(response => profileActions.meLoadedEvent({me: response}))
     )
   );
 
