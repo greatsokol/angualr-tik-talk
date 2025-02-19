@@ -61,15 +61,15 @@ export class AuthService {
   logout() {
     this._token = undefined;
     this._refreshToken = undefined;
-    this.cookieService.delete('token');
-    this.cookieService.delete('refresh_token');
+    this.cookieService.delete('token', '/');
+    this.cookieService.delete('refresh_token', '/');
     this.router.navigate(['/login']);
   }
 
   saveToken(data: TokenResponse) {
     this._token = data.access_token;
     this._refreshToken = data.refresh_token;
-    this.cookieService.set('token', data.access_token);
-    this.cookieService.set('refresh_token', data.refresh_token);
+    this.cookieService.set('token', data.access_token, {path: '/'});
+    this.cookieService.set('refresh_token', data.refresh_token, {path: '/'});
   }
 }

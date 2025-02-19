@@ -32,16 +32,8 @@ export class PostFeedComponent implements AfterViewInit {
 
   constructor() {
     effect(() => {
-      console.log(this.profile());
       firstValueFrom(this.postService.fetchPosts(this.profile()!.id));
     });
-
-    // toObservable(this.profile).subscribe(
-    //   profile => {
-    //     console.log(profile);
-    //     firstValueFrom(this.postService.fetchPosts(profile!.id))
-    //   }
-    // )
   }
 
   ngAfterViewInit() {

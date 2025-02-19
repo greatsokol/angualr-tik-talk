@@ -17,7 +17,7 @@ export class ProfileService {
   }
 
   getMe() {
-    return this.#http.get<Profile>(`${baseUrl}account/me`).pipe(
+    return this.#http.get<Profile>(`${baseUrl}account/me`, {observe: 'body'}).pipe(
       map(me => {
         return {
           ...me,

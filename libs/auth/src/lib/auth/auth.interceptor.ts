@@ -3,7 +3,7 @@ import {inject} from '@angular/core';
 import {AuthService} from './auth.service';
 import {BehaviorSubject, catchError, filter, switchMap, tap, throwError,} from 'rxjs';
 
-var isRefreshing$ = new BehaviorSubject<boolean>(false);
+const isRefreshing$ = new BehaviorSubject<boolean>(false);
 
 export const authTokenInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
@@ -16,7 +16,6 @@ export const authTokenInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(addToken(req, token)).pipe(
     catchError((err) => {
-      console.log(err);
       if (err.status == 403) {
         return refreshAndProceed(authService, req, next);
       }
@@ -35,13 +34,16 @@ const refreshAndProceed = (
     return authService.refreshAuthToken().pipe(
       switchMap((data) => {
         return next(addToken(req, data.access_token)).pipe(
-          tap((_) => isRefreshing$.next(false))
+          tap((response) => {
+            if (response.type != 0 && isRefreshing$.value)
+              if (isRefreshing$.value) isRefreshing$.next(false);
+          })
         );
       })
     );
   }
 
-  if (req.url.endsWith('/refresh'))
+  if (req.url.endsWith('/auth/refresh'))
     return next(addToken(req, authService.token));
 
   return isRefreshing$.pipe(

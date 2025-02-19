@@ -1,24 +1,63 @@
 import {inject, Injectable, signal} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Chat, LastMessage, Message} from '../interfaces/chats.interface';
-import {map} from 'rxjs';
-import {ProfileService, selectMe} from "@tt/profile";
+import {map, Observable} from 'rxjs';
+import {selectMe} from "@tt/profile";
 import {baseUrl} from "@tt/globals";
 import {Store} from "@ngrx/store";
+import {ChatsWsServiceInterface} from "./chats-ws-service.interface";
+import {AuthService} from "@tt/auth";
+import {ChatWsMessage} from "../interfaces/chat-ws-message.interface";
+import {isErrorMessage, isNewMessage, isUnreadMessage} from "../interfaces/type-guards";
+import {ChatWsRxjsService} from "./chat-ws-rxjs.service";
 
 @Injectable({
   providedIn: 'root',
 })
 export class ChatsService {
   #http = inject(HttpClient);
+  #authService = inject(AuthService);
   #store = inject(Store);
   #me = this.#store.selectSignal(selectMe);
   //#me = inject(ProfileService).me;
+
+  wsAdapter: ChatsWsServiceInterface = new ChatWsRxjsService();
 
   activeChatMessages = signal<Message[]>([]);
 
   #chatsUrl = `${baseUrl}chat/`;
   #messageUrl = `${baseUrl}message/`;
+
+  connectWs() {
+    return this.wsAdapter.connect({
+      url: `${this.#chatsUrl}ws`,
+      token: this.#authService.token ?? '',
+      handleMessage: this.handleWsMessage
+    }) as Observable<ChatWsMessage>
+  }
+
+  handleWsMessage = (message: ChatWsMessage) => {
+    if (isErrorMessage(message)) {
+      console.log('WEBSOCKET: ', message.message);
+
+    } else if (isUnreadMessage(message)) {
+
+    } else if (isNewMessage(message)) {
+      this.activeChatMessages.set([
+        ...this.activeChatMessages(),
+        {
+          id: message.data.id,
+          userFromId: message.data.author,
+          personalChatId: message.data.chat_id,
+          text: message.data.message,
+          createdAt: message.data.created_at,
+          isRead: false,
+          isMine: false
+
+        }
+      ])
+    }
+  }
 
   createChat(userId: number) {
     return this.#http.post<Chat>(`${this.#chatsUrl}${userId}`, {});

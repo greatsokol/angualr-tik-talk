@@ -12,7 +12,6 @@ import {
 import {ChatWorkspaceMessageComponent} from './chat-workspace-message/chat-workspace-message.component';
 import {MessageInputComponent} from '../../../ui';
 import {Chat, ChatsService} from '../../../data';
-import {firstValueFrom, timer} from 'rxjs';
 import {DebounceMethod} from "@tt/shared";
 
 @Component({
@@ -38,7 +37,7 @@ export class ChatWorkspaceMessagesWrapperComponent
   }
 
   ngOnInit() {
-    this.repeatingLoadMessages();
+    //this.repeatingLoadMessages();
   }
 
   ngAfterViewInit() {
@@ -56,17 +55,10 @@ export class ChatWorkspaceMessagesWrapperComponent
   }
 
   async onSendMessage(message: string) {
-    await firstValueFrom(
-      this.chatsService.sendMessage(this.chat().id, message)
-    );
-    await firstValueFrom(this.chatsService.getChatById(this.chat().id));
-  }
-
-  repeatingLoadMessages() {
-    firstValueFrom(this.chatsService.getChatById(this.chat().id)).then((_) => {
-      firstValueFrom(timer(5000)).then((_) => {
-        this.repeatingLoadMessages();
-      });
-    });
+    this.chatsService.wsAdapter.sendMessage(message, this.chat().id);
+    // await firstValueFrom(
+    //   this.chatsService.sendMessage(this.chat().id, message)
+    // );
+    //await firstValueFrom(this.chatsService.getChatById(this.chat().id));
   }
 }

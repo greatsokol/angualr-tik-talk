@@ -13,7 +13,9 @@ export function DebounceMethod(
       target,
       'subscription',
       fromEvent(window, 'resize')
-        .pipe(debounce((_) => interval(200)))
+        .pipe(
+          debounce((_) => interval(200))
+        )
         .subscribe(() => {
           Reflect.get(target, 'subscription')?.unsubscribe();
           Reflect.set(target, 'subscription', undefined);
