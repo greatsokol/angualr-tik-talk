@@ -11,3 +11,7 @@ export function isNewMessage(message: ChatWsMessage): message is ChatWsNewMessag
 export function isErrorMessage(message: ChatWsMessage): message is ChatWsErrorMessage {
   return 'status' in message && message.status === 'error';
 }
+
+export function isInvalidTokenErrorMessage(message: ChatWsMessage): message is ChatWsErrorMessage {
+  return 'status' in message && 'message' in message && message.status === 'error' && message.message === 'Invalid token';
+}

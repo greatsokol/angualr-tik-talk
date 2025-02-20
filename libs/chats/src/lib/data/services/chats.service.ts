@@ -1,14 +1,14 @@
 import {inject, Injectable, signal} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Chat, LastMessage, Message} from '../interfaces/chats.interface';
-import {map, Observable} from 'rxjs';
+import {firstValueFrom, map, Observable, of, switchMap} from 'rxjs';
 import {selectMe} from "@tt/profile";
 import {baseUrl} from "@tt/globals";
 import {Store} from "@ngrx/store";
 import {ChatsWsServiceInterface} from "./chats-ws-service.interface";
 import {AuthService} from "@tt/auth";
 import {ChatWsMessage} from "../interfaces/chat-ws-message.interface";
-import {isErrorMessage, isNewMessage, isUnreadMessage} from "../interfaces/type-guards";
+import {isInvalidTokenErrorMessage, isNewMessage, isUnreadMessage} from "../interfaces/type-guards";
 import {ChatWsRxjsService} from "./chat-ws-rxjs.service";
 
 @Injectable({
@@ -28,19 +28,22 @@ export class ChatsService {
   #chatsUrl = `${baseUrl}chat/`;
   #messageUrl = `${baseUrl}message/`;
 
-  connectWs() {
-    return this.wsAdapter.connect({
+  connectWs(): Observable<ChatWsMessage> {
+    return (this.wsAdapter.connect({
       url: `${this.#chatsUrl}ws`,
       token: this.#authService.token ?? '',
       handleMessage: this.handleWsMessage
-    }) as Observable<ChatWsMessage>
+    }) as Observable<ChatWsMessage>)
+      .pipe(
+        switchMap(message => {
+          return isInvalidTokenErrorMessage(message)
+            ? firstValueFrom(this.#authService.refreshAuthToken().pipe(switchMap(_ => this.connectWs())))
+            : of(message);
+        }))
   }
 
   handleWsMessage = (message: ChatWsMessage) => {
-    if (isErrorMessage(message)) {
-      console.log('WEBSOCKET: ', message.message);
-
-    } else if (isUnreadMessage(message)) {
+    if (isUnreadMessage(message)) {
 
     } else if (isNewMessage(message)) {
       this.activeChatMessages.set([

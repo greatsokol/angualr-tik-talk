@@ -13,6 +13,7 @@ import {ChatWorkspaceMessageComponent} from './chat-workspace-message/chat-works
 import {MessageInputComponent} from '../../../ui';
 import {Chat, ChatsService} from '../../../data';
 import {DebounceMethod} from "@tt/shared";
+import {firstValueFrom} from "rxjs";
 
 @Component({
   selector: 'app-chat-workspace-messages-wrapper',
@@ -59,6 +60,6 @@ export class ChatWorkspaceMessagesWrapperComponent
     // await firstValueFrom(
     //   this.chatsService.sendMessage(this.chat().id, message)
     // );
-    //await firstValueFrom(this.chatsService.getChatById(this.chat().id));
+    await firstValueFrom(this.chatsService.getChatById(this.chat().id));
   }
 }
