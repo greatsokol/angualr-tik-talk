@@ -6,18 +6,22 @@ export const selectFilteredProfiles = createSelector(
   (profiles) => profiles
 )
 
+export const selectProfilesPageAndSize = createSelector(
+  profileFeature.selectProfileFeatureState,
+  (state) => {
+    return {
+      page: state.page,
+      size: state.size,
+    }
+  }
+)
+
 export const selectMe = createSelector(
   profileFeature.selectMe,
   (me) => me
 )
 
-export const selectSearchFilter = createSelector(
-  profileFeature.selectSearchFilter,
-  (searcFilter) => {
-    return {
-      firstName: searcFilter["firstName"],
-      lastName: searcFilter["lastName"],
-      stack: searcFilter["stack"]
-    }
-  }
+export const selectProfileFilters = createSelector(
+  profileFeature.selectProfileFilters,
+  (filters) => filters
 )

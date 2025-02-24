@@ -2,7 +2,9 @@ import {inject, Injectable} from "@angular/core";
 import {ProfileService} from "../services/profile.service";
 import {Actions, createEffect, ofType} from "@ngrx/effects";
 import {profileActions} from "./actions";
-import {map, switchMap} from "rxjs";
+import {map, switchMap, withLatestFrom} from "rxjs";
+import {Store} from "@ngrx/store";
+import {selectProfileFilters, selectProfilesPageAndSize} from "./selectors";
 
 @Injectable({
     providedIn: 'root'
@@ -11,12 +13,23 @@ import {map, switchMap} from "rxjs";
 export class ProfileEffects {
   profileService = inject(ProfileService);
   actions$ = inject(Actions);
+  store = inject(Store);
 
   filterProfiles = createEffect(
     () => this.actions$.pipe(
-      ofType(profileActions.filterEvent),
-      switchMap(({filters}) =>
-        this.profileService.filterProfiles(filters)),
+      ofType(
+        profileActions.filterEvent,
+        profileActions.setPage
+      ),
+      withLatestFrom(
+        this.store.select(selectProfileFilters),
+        this.store.select(selectProfilesPageAndSize)
+      ),
+      switchMap(([_, filters, pageAndSize]) =>
+        this.profileService.filterProfiles({
+          ...pageAndSize,
+          ...filters
+        })),
       map(response => profileActions.profilesLoadedEvent({profiles: response.items}))
     )
   );

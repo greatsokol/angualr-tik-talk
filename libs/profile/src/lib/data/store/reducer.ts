@@ -7,11 +7,8 @@ export interface ProfileState {
   profileFilters: Record<string, any>,
   me: Profile | null,
   avatarUrl: string | null,
-  searchFilter: {
-    firstName: string,
-    lastName: string,
-    stack: string
-  }
+  page: number,
+  size: number
 }
 
 export const initialState: ProfileState = {
@@ -19,11 +16,8 @@ export const initialState: ProfileState = {
   profileFilters: {},
   me: null,
   avatarUrl: null,
-  searchFilter: {
-    firstName: '',
-    lastName: '',
-    stack: ''
-  }
+  page: 1,
+  size: 10
 }
 
 export const profileFeature = createFeature({
@@ -34,18 +28,24 @@ export const profileFeature = createFeature({
     on(profileActions.filterEvent, (state, payload) => {
       return {
         ...state,
-        searchFilter: {
-          firstName: payload.filters["firstName"],
-          lastName: payload.filters["lastName"],
-          stack: payload.filters["stack"]
-        }
+        profiles: [],
+        page: initialState.page,
+        profileFilters: payload.filters
+      }
+    }),
+
+    on(profileActions.setPage, (state, payload) => {
+      const page = payload.page ?? state.page + 1;
+      return {
+        ...state,
+        page
       }
     }),
 
     on(profileActions.profilesLoadedEvent, (state, payload) => {
       return {
         ...state,
-        profiles: payload.profiles
+        profiles: state.profiles.concat(payload.profiles)
       }
     }),
 
