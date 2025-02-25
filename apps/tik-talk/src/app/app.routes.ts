@@ -11,8 +11,10 @@ import {chatsRoutes} from "@tt/chats";
 import {LayoutComponent} from "@tt/layout";
 import {provideState} from "@ngrx/store";
 import {provideEffects} from "@ngrx/effects";
+import {FormsExperimentComponent} from "@tt/experimental";
 
 export const routes: Routes = [
+  { path: 'experimental', component: FormsExperimentComponent },
   {path: 'login', component: LoginPageComponent},
   {
     path: '',
