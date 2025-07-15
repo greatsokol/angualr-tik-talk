@@ -1,8 +1,17 @@
 import {CommonModule} from '@angular/common';
 import {Component, inject} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormControl,
+  ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
+  Validators
+} from '@angular/forms';
 import {MockService} from "../data";
+import {NameValidator} from "./name.validator";
 
 enum ReceiverType {
   PERSON = 'PERSON',
@@ -31,6 +40,36 @@ interface Feature {
 //   });
 // }
 
+function validateStartWith(forbiddenLetter: String): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    return control.value.toLowerCase().startsWith(forbiddenLetter)
+      ? {startWith: {message: `${forbiddenLetter} не используем!`}}
+      : null
+  }
+}
+
+function validateDateRange({fromControlName, toControlName}: {
+  fromControlName: string,
+  toControlName: string
+}): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const fromControl: AbstractControl | null = control.get(fromControlName);
+    const toControl: AbstractControl | null = control.get(toControlName);
+    if (!fromControl || !toControl) return null;
+    const fromDate = new Date(fromControl.value);
+    const toDate = new Date(toControl.value);
+
+    if (fromDate && toDate && fromDate > toDate) {
+      const err = {dateRange: {message: 'Дата начала не может быть позднее даты конца'}}
+      fromControl.setErrors(err);
+      toControl.setErrors(err);
+      return err;
+    }
+
+    return null;
+  }
+}
+
 @Component({
   selector: 'tt-forms-experiment',
   standalone: true,
@@ -41,6 +80,7 @@ interface Feature {
 export class FormsExperimentComponent {
   #fb = inject(FormBuilder);
   #mockService = inject(MockService);
+  #nameValidator = inject(NameValidator);
 
   ReceiverType = ReceiverType;
   features: Feature[] = [];
@@ -55,11 +95,23 @@ export class FormsExperimentComponent {
 
   form = this.#fb.group({
     type: this.#fb.control<ReceiverType>(ReceiverType.PERSON),
-    name: this.#fb.nonNullable.control<string>('Lucas'),
+    name: this.#fb.nonNullable.control<string>('Lucas', {
+        validators: [Validators.required, validateStartWith('я')],
+        asyncValidators: [this.#nameValidator.validate.bind(this.#nameValidator)],
+        updateOn: "blur"
+      }
+      ,
+    ),
     inn: this.#fb.control<string>('fsdfsdfsd'),
     lastName: this.#fb.control<string>('dsfasdf'),
     addresses: this.#fb.array([this.createAddressFormGroup({})]),
-    feature: this.#fb.record<boolean>({})
+    feature: this.#fb.record<boolean>({}),
+    dateRange: this.#fb.group({
+      from: this.#fb.control<string>(''),
+      to: this.#fb.control<string>(''),
+    }, {
+      validators: validateDateRange({fromControlName: 'from', toControlName: 'to'})
+    })
   });
 
   constructor() {

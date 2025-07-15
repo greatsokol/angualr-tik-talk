@@ -2,7 +2,8 @@ import {Component} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ajax} from "rxjs/internal/ajax/ajax";
 import {
-  auditTime, catchError, combineLatest, concat,
+  AsyncSubject,
+  auditTime, BehaviorSubject, catchError, combineLatest, concat,
   debounceTime, delay,
   distinctUntilChanged,
   filter, finalize,
@@ -10,8 +11,8 @@ import {
   first, firstValueFrom, forkJoin,
   fromEvent,
   interval, lastValueFrom, map, merge,
-  of, pairwise, race, reduce, retry, scan,
-  skip, switchMap,
+  of, pairwise, race, reduce, ReplaySubject, retry, scan,
+  skip, Subject, switchMap,
   take,
   tap, throttleTime,
   throwError,
@@ -66,7 +67,7 @@ export class ExperimentalComponent {
         reduce((accum, current) => {
           return accum + current;
         }, 0),
-        scan((accum, current) => {
+        scan((accum, current) => { // scan как reduce
           return accum + current;
         }, 0),
       );
@@ -168,5 +169,41 @@ export class ExperimentalComponent {
     // преобразование к Promise ========================================================================================
     firstValueFrom(utility$);
     lastValueFrom(utility$);
+
+    // Subject
+    const subject$ = new Subject();
+    const isLoading$ = new Subject<boolean>();
+    // можно подписаться
+    subject$.subscribe(value => {
+      console.log(value)
+    });
+
+    subject$.next(100); // складываем значения в subject
+
+    isLoading$.next(true);
+    timer(3000).subscribe(_ => isLoading$.next(false))
+
+    // BehaviorSubject
+    const behaviourSubject$ = new BehaviorSubject<number>(1); // требует начального значения
+    behaviourSubject$.getValue(); // доступ к последнему значению
+
+    // ReplaySubject
+    const replaySubjectBufConstrain = new ReplaySubject(10); // требует кол-во последних значений, которые нужно хранить
+    const replaySubjectBufAndTimeConstrain = new ReplaySubject(10, 2000); // можно добавить срок хранения
+    const replaySubjectInfinityAll = new ReplaySubject(); // можно не ограничивать
+    const replaySubjectInfinityBuf = new ReplaySubject(Number.POSITIVE_INFINITY, 2000); // можно ограничивать только время хранения
+
+    // AsyncSubject
+    const aSubject$ = new AsyncSubject<number>();
+    aSubject$.next(1);
+    aSubject$.next(1);
+    aSubject$.next(2);
+    aSubject$.next(3);
+    aSubject$.complete(); // выдаст подписчикам только последнее значение после завершения
+
+    // разограничение ответственности в плане ОПП,
+    // если хотим выдать подписчикам subject, но не хотим,
+    // чтобы снаружи могли сделать next в этот subject:
+    subject$.asObservable();
   }
 }

@@ -14,3 +14,36 @@ form {
   gap: 16px;
   margin-bottom: 24px;
 }
+
+.tt-input.ng-invalid.ng-touched {
+  border: 2px solid tomato;
+}
+
+.tt-input.ng-invalid.ng-touched + .validation {
+  display: block;
+}
+
+.validation {
+  display: none;
+}
+
+//.ng-submitted {
+//  border: 10px solid aquamarine;
+//}
+
+.two-columns {
+  display: grid;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 12px;
+}
+
+.tt-input::-webkit-calendar-picker-indicator{
+  background: var(--primary-color);
+  cursor: pointer;
+}
+
+.tt-input.ng-pending {
+  border: 2px dashed var(--primary-color);
+}
